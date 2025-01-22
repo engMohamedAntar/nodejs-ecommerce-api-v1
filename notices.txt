@@ -1,0 +1,29 @@
+npm init --y                    -->initiate package.json.
+npm install express --save      --> install express.
+npm install --save-dev nodemon or npm i -D nodemon  --> install nodemon locally in the devDependancy (it will work only in the developement mode).
+npm install dptenv --> used to access the .env file.
+npm install morgan.
+npm install mongoose.
+npm install mongodb.
+npm install slugify.
+npm install --save express-async-handler --> wrapes the async functions to handle its errors.
+npm install cross-env --save-dev         --> used to be able to work with multiple environments(development and production etc...).
+npm install express-validator            --> express validator is used to create the validation layer after the route layer.
+npm install colors --> colors is required in the seeder.js file.
+npm install uuid --> creates a random id (to use it in the naming of the files in multer).
+npm install sharp --> convert large images to smaller (takes a buffer storage as a parameter).
+npm i bcrypt      --> install bcrypt which is used to encrypt the password before saving it to database.
+npm i jsonwebtoken --> used to create jwt for the users who signUp.
+npm install nodemailer --> used to create an object the we use to send emails to users.
+npm install --save stripe --> stripe is a payment gate.
+npm install cors --> cors is used to enable other domains to access your app.
+npm install compression --> compress all responses.
+
+
+
+
+
+
+
+
+
