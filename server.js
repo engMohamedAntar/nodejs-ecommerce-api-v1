@@ -31,10 +31,6 @@ app.use(express.static(path.join(__dirname, "uploads")));
 //Mount Routes
 const mounteRoutes = require("./routes"); //will get the index file by default
 mounteRoutes(app);
-app.get('/', (req, res) => {
-  res.send('Welcome to my Node.js API!');
-});
-
 
 //handling incorrect routes
 app.all("*", (req, res, next) => {
