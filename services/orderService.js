@@ -156,6 +156,7 @@ exports.checkoutWebhook= AsyncHandler(async (req,res,next)=>{
   catch (err) {
     res.status(400).send(`Webhook Error: ${err.message}`);
   }
+  console.log(event.type);
   if(event.type === 'checkout.session.completed') {
     console.log('Hellow Mohamed');
   }
