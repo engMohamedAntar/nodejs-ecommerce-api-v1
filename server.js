@@ -16,7 +16,6 @@ dbConnection();
 const app = express();
 // Enable other domains to access your app
 app.use(cors());
-//
 app.options("*", cors()); //?
 
 //middelwares
@@ -28,9 +27,10 @@ if (process.env.NODE_ENV === "development") {
 app.use(express.json()); //parse the req.body content
 app.use(express.static(path.join(__dirname, "uploads")));
 
-//Mount Routes
+//Routes
 const mounteRoutes = require("./routes"); //will get the index file by default
 mounteRoutes(app);
+
 
 //handling incorrect routes
 app.all("*", (req, res, next) => {
@@ -43,7 +43,7 @@ app.use(golbalError);
 const PORT = process.env.PORT || 8000;
 const server = app.listen(PORT, () => {
   console.log(`App running on port ${PORT}`);
-});
+});           
 
 // Handle errors outside express
 process.on("unhandledRejection", (err) => {

@@ -108,7 +108,7 @@ exports.updateOrderToDeliverd = AsyncHandler(async (req, res, next) => {
 // @desc create a checkout session
 // @route POST api/v1/orders/checkoutSession/:cartId
 // @access Protect/user
-exports.checkoutSession = AsyncHandler(async (req, res, next) => {
+exports.createCheckoutSession = AsyncHandler(async (req, res, next) => {
   //calc totalCartPrice
   const taxPrice= 0;
   const shippingPrice= 0;
@@ -118,8 +118,8 @@ exports.checkoutSession = AsyncHandler(async (req, res, next) => {
     ? cart.totalPriceAfterDiscount
     : cart.totalCartPrice;
   const totalOrderPrice= totalCartPrice + taxPrice + shippingPrice;
-  //create a customer
 
+  //create a session
   const session= await stripe.checkout.sessions.create({
     line_items: [
       {
@@ -140,8 +140,25 @@ exports.checkoutSession = AsyncHandler(async (req, res, next) => {
     client_reference_id: req.params.cartId,
     customer_email: req.user.email,
     metadata: req.body.shippingAddress
-  })
+  });
+  
   res.status(200).json({status: 'success', session});
+});
+
+exports.checkoutWebhook= AsyncHandler(async (req,res,next)=>{
+  const sig = req.headers['stripe-signature'];
+
+  let event;
+
+  try {
+    event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
+  }
+  catch (err) {
+    res.status(400).send(`Webhook Error: ${err.message}`);
+  }
+  if(event.type === 'checkout.session.completed') {
+    console.log('Hellow Mohamed');
+  }
 });
 
 

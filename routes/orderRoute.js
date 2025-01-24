@@ -9,7 +9,7 @@ const {
   ensureOrderOwnership,
   updateOrderToPaid,
   updateOrderToDeliverd,
-  checkoutSession
+  createCheckoutSession
 } = require("../services/orderService");
 const { allowedTo, protect } = require("../services/authService");
 
@@ -26,5 +26,5 @@ router.get("/:id", ensureOrderOwnership, getSpecificOrder);
 router.put('/:id/pay', allowedTo('admin', 'manager'), updateOrderToPaid);
 router.put('/:id/deliver',allowedTo('admin', 'manager'), updateOrderToDeliverd);
 
-router.post('/checkoutSession/:cartId', allowedTo('user'), checkoutSession)
+router.post('/checkoutSession/:cartId', allowedTo('user'), createCheckoutSession)
 module.exports = router;
