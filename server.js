@@ -30,7 +30,8 @@ app.use(express.static(path.join(__dirname, "uploads")));
 //Routes
 const mounteRoutes = require("./routes"); //will get the index file by default
 mounteRoutes(app);
-
+const {checkoutWebhook}= require('./services/orderService');
+app.post('/webhook', checkoutWebhook);
 
 //handling incorrect routes
 app.all("*", (req, res, next) => {
