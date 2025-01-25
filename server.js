@@ -5,6 +5,7 @@ const dotenv = require("dotenv");
 const morgan = require("morgan");
 const cors = require("cors");
 const compression = require('compression');
+const bodyParser = require('body-parser')
 dotenv.config();
 const dbConnection = require("./config/database");
 const ApiError = require("./utils/ApiError");
@@ -27,8 +28,9 @@ app.options("*", cors()); //?
 app.use(compression());
 
 // webhook for the checkout process
-app.post('/webhook', express.raw({type: 'application/json'}), checkoutWebhook  );
-
+app.post('/webhook', express.raw({type: 'application/json'}) , checkoutWebhook  );
+// 
+// bodyParser.raw({ type: 'application/json' })
 //middelwares
 if (process.env.NODE_ENV === "development") {
   //apply the morgan middleware only in devlelopment modes

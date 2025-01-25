@@ -145,7 +145,7 @@ exports.createCheckoutSession = AsyncHandler(async (req, res, next) => {
   res.status(200).json({status: 'success', session});
 });
 
-exports.checkoutWebhook= AsyncHandler(async (req,res,next)=>{
+exports.checkoutWebhook= (req,res,next)=>{
   const sig = req.headers['stripe-signature'];
 
   let event;
@@ -161,7 +161,7 @@ exports.checkoutWebhook= AsyncHandler(async (req,res,next)=>{
     console.log('Hi Mohamed, Create order here');
   }
   res.status(200).json({ received: true });
-});
+};
 
 
 //notices
