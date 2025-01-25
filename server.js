@@ -4,34 +4,43 @@ const express = require("express");
 const dotenv = require("dotenv");
 const morgan = require("morgan");
 const cors = require("cors");
+const compression = require('compression');
 dotenv.config();
 const dbConnection = require("./config/database");
-
 const ApiError = require("./utils/ApiError");
 const golbalError = require("./middlewares/errorMiddleware");
+
+//routes
+const mounteRoutes = require("./routes"); //will get the index file by default
+const {checkoutWebhook}= require('./services/orderService');
+
 //connect to database
 dbConnection();
 
 //express app
 const app = express();
+
 // Enable other domains to access your app
 app.use(cors());
 app.options("*", cors()); //?
+//compress all responses
+app.use(compression());
+
+// webhook for the checkout process
+app.post('/webhook', express.raw({type: 'application/json'}), checkoutWebhook  );
 
 //middelwares
 if (process.env.NODE_ENV === "development") {
   //apply the morgan middleware only in devlelopment modes
   app.use(morgan("dev"));
 }
-
 app.use(express.json()); //parse the req.body content
 app.use(express.static(path.join(__dirname, "uploads")));
 
 //Routes
-const mounteRoutes = require("./routes"); //will get the index file by default
 mounteRoutes(app);
-const {checkoutWebhook}= require('./api');
-app.post('/webhook', checkoutWebhook);
+
+
 
 //handling incorrect routes
 app.all("*", (req, res, next) => {
