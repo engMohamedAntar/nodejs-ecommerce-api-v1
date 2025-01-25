@@ -160,6 +160,7 @@ exports.checkoutWebhook= AsyncHandler(async (req,res,next)=>{
   if(event.type === 'checkout.session.completed') {
     console.log('Hi Mohamed, Create order here');
   }
+  res.status(200).json({ received: true });
 });
 
 
