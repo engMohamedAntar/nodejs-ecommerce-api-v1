@@ -1,13 +1,14 @@
 //orderService.js
 const AsyncHandler = require("express-async-handler");
-const stripe= require('stripe')(process.env.STRIPE_SECRET);
+const stripe = require("stripe")(process.env.STRIPE_SECRET);
 const CartModel = require("../models/cartModel");
 const ApiError = require("../utils/ApiError");
 const OrderModel = require("../models/orderModel");
 const ProductModel = require("../models/productModel");
+const UserModel = require("../models/userModel");
 const factory = require("./handlersFactory");
 
-// @desc create an order
+// @desc create a cash order
 // @route POST api/v1/orders/cartId
 // @access Protected/User
 exports.createCashOrder = AsyncHandler(async (req, res, next) => {
@@ -31,8 +32,8 @@ exports.createCashOrder = AsyncHandler(async (req, res, next) => {
 
   // 4) for each product in the cartItems increment its sold and decrement its quantiy
   if (order) {
-    const bulkOperations = cart.cartItems.map((item) => {
-      // ?
+    const bulkOperations = cart.cartItems.map((item) => {// ?
+      
       return {
         updateOne: {
           filter: { _id: item.product },
@@ -110,17 +111,17 @@ exports.updateOrderToDeliverd = AsyncHandler(async (req, res, next) => {
 // @access Protect/user
 exports.createCheckoutSession = AsyncHandler(async (req, res, next) => {
   //calc totalCartPrice
-  const taxPrice= 0;
-  const shippingPrice= 0;
+  const taxPrice = 0;
+  const shippingPrice = 0;
   const cart = await CartModel.findById(req.params.cartId);
   if (!cart) return next(new ApiError("Cart not found", 404));
   const totalCartPrice = cart.totalPriceAfterDiscount
     ? cart.totalPriceAfterDiscount
     : cart.totalCartPrice;
-  const totalOrderPrice= totalCartPrice + taxPrice + shippingPrice;
+  const totalOrderPrice = totalCartPrice + taxPrice + shippingPrice;
 
   //create a session
-  const session= await stripe.checkout.sessions.create({
+  const session = await stripe.checkout.sessions.create({
     line_items: [
       {
         price_data: {
@@ -130,38 +131,85 @@ exports.createCheckoutSession = AsyncHandler(async (req, res, next) => {
           },
           unit_amount: totalOrderPrice * 100,
         },
-        quantity: 1
-      }
+        quantity: 1,
+      },
     ],
 
-    mode: 'payment',
-    success_url: `${req.protocol}://${req.get('host')}/api/v1/orders`,
-    cancel_url: `${req.protocol}://${req.get('host')}/api/v1/cart`,
+    mode: "payment",
+    success_url: `${req.protocol}://${req.get("host")}/api/v1/orders`,
+    cancel_url: `${req.protocol}://${req.get("host")}/api/v1/cart`,
     client_reference_id: req.params.cartId,
     customer_email: req.user.email,
-    metadata: req.body.shippingAddress
+    metadata: req.body.shippingAddress,
   });
-  
-  res.status(200).json({status: 'success', session});
+
+  res.status(200).json({ status: "success", session });
 });
 
-exports.checkoutWebhook= (req,res,next)=>{
-  const sig = req.headers['stripe-signature'];
+//create a card order to use in the checkoutWebhook
+const createCardOrder = AsyncHandler(async (session) => {
+  const cartId = session.client_reference_id;
+  const cart = await CartModel.findById(cartId);
+  const totalOrderPrice = session.amount_total / 100;
+  const user = UserModel.findOne({ email: session.customer_email });
+
+  const order = await OrderModel.create({
+    user: user._id,
+    cartItems: cart.cartItems,
+    paymentMethod: "card",
+    shippingAddress: session.metadata,
+    totalOrderPrice,
+    isPaid: true,
+    paidAt: Date.now(),
+  });
+
+  //for each product in the cartItems update its quantity and sold
+  if(order) {
+    const bulkOperations= cart.cartItems.map((item)=>{
+      return {
+        updateOne: {
+          filter: {_id: item.product},
+          update: { $inc: {quantity: -item.quantity, sold: +item.quantity}}
+        }
+      }
+    })
+    await ProductModel.bulkWrite(bulkOperations);
+  }
+});
+
+// @desc This webhook will run when stripe payment is success
+// @route POST /checkout-webhook --> this route exist in server.js file
+// @access Protected/User
+exports.checkoutWebhook = (req, res, next) => {
+  const sig = req.headers["stripe-signature"];
 
   let event;
 
   try {
-    event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
-  }
-  catch (err) {
+    event = stripe.webhooks.constructEvent(
+      req.body,
+      sig,
+      process.env.STRIPE_WEBHOOK_SECRET
+    );
+  } catch (err) {
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
-  console.log(event.type);
-  if(event.type === 'checkout.session.completed') {
-    console.log('Hi Mohamed, Create order here');
+  if (event.type === "checkout.session.completed") {
+    createCardOrder(event.object);
   }
   res.status(200).json({ received: true });
 };
+
+
+
+
+
+
+
+
+
+
+
 
 
 //notices
@@ -175,7 +223,6 @@ exports.checkoutWebhook= (req,res,next)=>{
  who owns that order so in case the loggedIn user isn't the owner of this order ensureOrderOwnership will 
  prevent the user from accessing it 
 */
-
 
 /*
   //deprecated syntax for line_items

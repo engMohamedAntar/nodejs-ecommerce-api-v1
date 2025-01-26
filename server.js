@@ -28,7 +28,7 @@ app.options("*", cors()); //?
 app.use(compression());
 
 // webhook for the checkout process
-app.post('/webhook', express.raw({type: 'application/json'}) , checkoutWebhook  );
+app.post('/webhook', express.raw({type: 'application/json'}) , checkoutWebhook);
 // 
 // bodyParser.raw({ type: 'application/json' })
 //middelwares
