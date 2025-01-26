@@ -150,8 +150,9 @@ exports.createCheckoutSession = AsyncHandler(async (req, res, next) => {
 const createCardOrder = AsyncHandler(async (session) => {
   const cartId = session.client_reference_id;
   const cart = await CartModel.findById(cartId);
+
   const totalOrderPrice = session.amount_total / 100;
-  const user = UserModel.findOne({ email: session.customer_email });
+  const user = await UserModel.findOne({ email: session.customer_email });
 
   const order = await OrderModel.create({
     user: user._id,
@@ -195,9 +196,9 @@ exports.checkoutWebhook = (req, res, next) => {
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
   if (event.type === "checkout.session.completed") {
-    createCardOrder(event.object);
+    createCardOrder(event.data.object);
   }
-  res.status(200).json({ received: true });
+  res.status(200).json({ received: true, antoor: "zeroo" });
 };
 
 
