@@ -202,6 +202,8 @@ exports.checkoutWebhook = (req, res, next) => {
   }
   console.log('every thing is ok dudes');
   res.status(200).json({ received: true, antoor: "zeroo" });
+  console.log({recieved: true, antoor: "zeroo"});
+  
 };
 
 
