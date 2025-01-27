@@ -175,7 +175,9 @@ const createCardOrder = AsyncHandler(async (session) => {
       }
     }
   )
-    await ProductModel.bulkWrite(bulkOperations);    
+    await ProductModel.bulkWrite(bulkOperations);
+    //delete the logged user cart
+    await CartModel.findByIdAndDelete(cartId);    
   }
 });
 
@@ -183,7 +185,6 @@ const createCardOrder = AsyncHandler(async (session) => {
 // @route POST /checkout-webhook --> this route exist in server.js file
 // @access Protected/User
 exports.checkoutWebhook = (req, res, next) => {
-  console.log('Entered checkoutWebhook');
   const sig = req.headers["stripe-signature"];
 
   let event;
