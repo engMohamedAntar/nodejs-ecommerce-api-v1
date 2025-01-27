@@ -200,9 +200,9 @@ exports.checkoutWebhook = (req, res, next) => {
   if (event.type === "checkout.session.completed") {
     createCardOrder(event.data.object);
   }
-  console.log('every thing is ok dudes');
+  console.log('every thing is ok dudes');  console.log({recieved: true, antoor: "zeroo"});
   res.status(200).json({ received: true, antoor: "zeroo" });
-  console.log({recieved: true, antoor: "zeroo"});
+
   
 };
 
