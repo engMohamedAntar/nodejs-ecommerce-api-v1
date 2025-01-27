@@ -150,7 +150,11 @@ exports.createCheckoutSession = AsyncHandler(async (req, res, next) => {
 const createCardOrder = AsyncHandler(async (session) => {
   const cartId = session.client_reference_id;
   const cart = await CartModel.findById(cartId);
-
+  if(!cart) {
+    console.log('card not exist');
+    return;
+  }
+    
   const totalOrderPrice = session.amount_total / 100;
   const user = await UserModel.findOne({ email: session.customer_email });
 
@@ -175,7 +179,9 @@ const createCardOrder = AsyncHandler(async (session) => {
       }
     })
     await ProductModel.bulkWrite(bulkOperations);
-  }
+  } else
+      console.log('order not exist');
+  
 });
 
 // @desc This webhook will run when stripe payment is success

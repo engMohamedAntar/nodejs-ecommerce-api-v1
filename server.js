@@ -29,7 +29,7 @@ app.use(compression());
 
 // webhook for the checkout process
 app.post('/webhook', express.raw({type: 'application/json'}) , checkoutWebhook);
-// 
+
 // bodyParser.raw({ type: 'application/json' })
 //middelwares
 if (process.env.NODE_ENV === "development") {
