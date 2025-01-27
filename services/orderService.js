@@ -200,7 +200,7 @@ exports.checkoutWebhook = (req, res, next) => {
   if (event.type === "checkout.session.completed") {
     createCardOrder(event.data.object);
   }
-  res.status(204).json({ received: true, antoor: "zeroo" });
+  res.status(200).json({ received: true, antoor: "zeroo" });
 };
 
 
