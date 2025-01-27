@@ -177,8 +177,11 @@ const createCardOrder = AsyncHandler(async (session) => {
           update: { $inc: {quantity: -item.quantity, sold: +item.quantity}}
         }
       }
-    })
+    }
+  )
     await ProductModel.bulkWrite(bulkOperations);
+    console.log('every thing is ok');
+    
   } else
       console.log('order not exist');
   
