@@ -150,10 +150,6 @@ exports.createCheckoutSession = AsyncHandler(async (req, res, next) => {
 const createCardOrder = AsyncHandler(async (session) => {
   const cartId = session.client_reference_id;
   const cart = await CartModel.findById(cartId);
-  if(!cart) {
-    console.log('card not exist');
-    return;
-  }
     
   const totalOrderPrice = session.amount_total / 100;
   const user = await UserModel.findOne({ email: session.customer_email });
@@ -179,18 +175,15 @@ const createCardOrder = AsyncHandler(async (session) => {
       }
     }
   )
-    await ProductModel.bulkWrite(bulkOperations);
-    console.log('every thing is ok');
-    
-  } else
-      console.log('order not exist');
-  
+    await ProductModel.bulkWrite(bulkOperations);    
+  }
 });
 
 // @desc This webhook will run when stripe payment is success
 // @route POST /checkout-webhook --> this route exist in server.js file
 // @access Protected/User
 exports.checkoutWebhook = (req, res, next) => {
+  console.log('Entered checkoutWebhook');
   const sig = req.headers["stripe-signature"];
 
   let event;
@@ -207,6 +200,7 @@ exports.checkoutWebhook = (req, res, next) => {
   if (event.type === "checkout.session.completed") {
     createCardOrder(event.data.object);
   }
+  console.log('every thing is ok dudes');
   res.status(200).json({ received: true, antoor: "zeroo" });
 };
 
