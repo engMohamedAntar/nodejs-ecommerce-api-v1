@@ -1,3 +1,4 @@
+//couponRoute.js
 const express= require('express');
 const router= express.Router();
 const {protect,allowedTo}= require('../services/authService');

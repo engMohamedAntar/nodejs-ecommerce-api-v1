@@ -42,7 +42,7 @@ exports.getOne= (Model, populationOpt)=>   //?
     asyncHandler(async(req,res,next)=>{
         const {id} = req.params;
         //1) Build query
-        let query= Model.findById(id);
+        let query=  Model.findById(id);
         if(populationOpt){
             query= query.populate(populationOpt); //populate the reviews field
         }
@@ -55,8 +55,7 @@ exports.getOne= (Model, populationOpt)=>   //?
     });
 
 exports.getAll= (Model,modelName='')=>
-    asyncHandler( async (req,res)=>{
-          
+    asyncHandler( async (req,res)=>{        
         let filterObj= {}; 
         if(req.filterObj)       //filterObj is set to req when getting getSubCategories for a specific category.
             filterObj= req.filterObj;

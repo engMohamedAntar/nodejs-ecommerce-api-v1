@@ -12,7 +12,6 @@ const {
       uploadProductImages,
       resizeProductImages
     } = require('../services/productService');
-
 const router= express.Router(); 
 
 // create nested route for riviews on pruducts

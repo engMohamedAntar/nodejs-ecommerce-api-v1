@@ -19,8 +19,10 @@ class ApiFeatures {
     }
     
     sort(){
+        console.log(this.queryObject.sort);
+        
         if(this.queryObject.sort){
-            const sortBy= this.queryObject.sort.split(',').join(' ');            //query in postman=> ?sort=-sold,price but we need to pass "-sold price" to the sort function
+            const sortBy= this.queryObject.sort.split(',').join(' ');            //query in the url => ?sort=-sold,price but we need to pass "-sold price" to the sort function
             this.mongooseQuery= this.mongooseQuery.sort(sortBy);        
         } else{
             this.mongooseQuery= this.mongooseQuery.sort('-createdAt');  //based on the newest

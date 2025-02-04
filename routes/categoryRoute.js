@@ -12,6 +12,7 @@ const {
     } = require('../services/categoryService');
 const subCategoryRoute= require('./subCategoryRoute');
 const {protect, allowedTo}= require('../services/authService');
+const csrfProtection= require('../middlewares/csrfMiddleware');
 const router= express.Router(); 
 
 //apply nested route
@@ -19,7 +20,7 @@ router.use('/:categoryId/subcategories', subCategoryRoute);
 // http://localhost:8000/api/v1/categories/66e1351096a827871476a6f6/subcategories
 
 router.route('/')               
-    .get(getCategories)
+    .get(csrfProtection ,getCategories)
     .post(
         protect,
         allowedTo('admin', 'manager'),
