@@ -9,7 +9,7 @@ const ApiFeatures = require("../utils/apiFeatures");
 const ApiError = require("../utils/ApiError");
 const sendEmail = require("../utils/sendEmail");
 const createToken = require("../utils/createToken");
-
+const {sanitizeUser}= require('../utils/sanitizeData');
 // @desc    Forgot password
 // @route   Post /api/v1/auth/signUp
 // @access  Public
@@ -25,7 +25,7 @@ exports.signUp = asyncHandler(async (req, res, next) => {
     expiresIn: "2h",
   });
   //return the response to client side
-  res.status(201).json({ data: user, token });
+  res.status(201).json({ data: sanitizeUser(user), token });
 });
 
 // @desc    logIn
@@ -34,6 +34,8 @@ exports.signUp = asyncHandler(async (req, res, next) => {
 exports.logIn = asyncHandler(async (req, res, next) => {
   //1) check that email exist and the password is correct
   const user = await UserModel.findOne({ email: req.body.email });
+  console.log(`user: ${user}`);
+  
   if (!user || !(await bcrypt.compare(req.body.password, user.password)))
     return next(new Error("invalid email or password"));
 
@@ -43,7 +45,7 @@ exports.logIn = asyncHandler(async (req, res, next) => {
   });
 
   //3) send response back to client side.
-  res.status(200).json({ data: user, token });
+  res.status(200).json({ data: sanitizeUser(user), token });
 });
 
 // @desc make sure the user is logged in
