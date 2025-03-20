@@ -62,7 +62,7 @@ app.use(cookieParser());
 
 //Prevent HTTP Parameter Pollution (HPP) ??
 app.use(hpp({ whitelist: ['filter', 'price', 'sold', 'quantity', 'ratingsAverage', 'ratingsQuantity'] }));
-app.set('trust proxy', 1);
+// app.set('trust proxy', 1);
 //Routes
 mounteRoutes(app);
 
