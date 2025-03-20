@@ -28,7 +28,7 @@ exports.updateSubCategoryValidator= [
     check('id')
         .notEmpty().withMessage("id is required")
         .isMongoId().withMessage("this is invalid subcategory id format"),
-        body('name')
+    body('name')
         .optional()                         //title may not be updated         
         .custom((val,{req})=>{
             req.body.slug= slugify(val);

@@ -85,15 +85,13 @@ exports.createProductValidator= [
             )
         ),
 
-
     check('brand')
         .optional()
         .isMongoId().withMessage('Invalid ID format'),
     check('ratingsAverage')
         .optional()
         .isNumeric()
-        .isLength({min:1}).withMessage('Rating must be greater than 1')
-        .isLength({max:5}).withMessage('Rating must be lower than 5'),
+        .isFloat({min:1, max: 5}).withMessage('Rating must be between 1 and 5'),
     check('ratingsQuantity')
         .optional()
         .isNumeric().withMessage('ratingsQuantity must be a number'),

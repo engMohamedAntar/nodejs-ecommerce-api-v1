@@ -34,7 +34,6 @@ exports.signUp = asyncHandler(async (req, res, next) => {
 exports.logIn = asyncHandler(async (req, res, next) => {
   //1) check that email exist and the password is correct
   const user = await UserModel.findOne({ email: req.body.email });
-  console.log(`user: ${user}`);
   
   if (!user || !(await bcrypt.compare(req.body.password, user.password)))
     return next(new Error("invalid email or password"));
@@ -60,11 +59,9 @@ exports.protect = asyncHandler(async (req, res, next) => {
 
   if (!token)
     return next(new ApiError("Not logged in, please logIn first", 401));
-  console.log("entered the protect rrr");
 
   // 2) verify weather this token is valid(not changed and not expired).
   const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY); //?
-  console.log("reached after decoded");
 
   // 3) cheak if user of this token still exists.
   const user = await UserModel.findById(decoded.userId);
@@ -87,8 +84,6 @@ exports.protect = asyncHandler(async (req, res, next) => {
   if (!user.active) return next(new ApiError("This user is not active"), 401);
 
   req.user = user; //?
-  console.log("reached the next() in protect");
-
   next();
 });
 
@@ -111,7 +106,7 @@ exports.forgotPassword = asyncHandler(async (req, res, next) => {
   // 1) Get user by email (to ensure email is correct).
   const user = await UserModel.findOne({ email: req.body.email });
   if (!user)
-    return next(new ApiError(`No user for this email ${req.body.email}`));
+    return next(new ApiError(`No user for this email ${req.body.email}`, 404));
 
   // 2) If user exists, Generate random 6 digits and save it in db.
   const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
@@ -159,7 +154,7 @@ exports.verifyPassResetCode = asyncHandler(async (req, res, next) => {
   });
   if (!user) return next(new ApiError("ResetCode is wrong or expired"), 400);
   user.passwordResetVerified = true;
-  user.save();
+  await user.save();
   res.status(200).json({ status: "success" });
 });
 
